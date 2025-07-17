@@ -22,4 +22,9 @@ let strNotVal=String(notVal) //Becomes "NaN" in the bg
 
 //OPERATIONS
 let str1="New", str2=" Delhi"
-let str3=str1+str2
+let str3=str1+str2 // str3="New Delhi"
+
+console.log("1"+1) //11
+console.log(1+"1") //11 (though postiton of string matters but here exc)
+console.log("2"+2+3) //223 because string at 1st pos (JS specific o/p)
+console.log(2+2+"3") //43 because string at last pos (JS specific o/p)
