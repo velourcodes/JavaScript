@@ -20,3 +20,4 @@ console.table([typeof myName,typeof age,typeof flag,
 // typeof(x) or typeof x are both valid
 // typeof(null) = object
 // typeof(undefined) = undefined
+// typeof(NaN) = undefined
