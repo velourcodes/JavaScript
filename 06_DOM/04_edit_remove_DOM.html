@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html lang="eng">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Adding & Deleting Elements: DOM</title>
+    </head>
+    <body style="background-color: black; color:white;">
+        <ul class="language">
+            <li>JavaScript</li>
+        </ul>
+    </body>
+    <script>
+      function addLangToList(lang_name)
+      {
+        const li=document.createElement("li");
+        li.appendChild(document.createTextNode(lang_name));
+        document.querySelector('.language').appendChild(li);
+      }
+      addLangToList("Python");
+      addLangToList("Rust");
+
+    // Editing
+    let secondLang = document.querySelector("li:nth-child(2)");
+    secondLang.outerHTML = "<li><b>GoLang</b></li>";
+    secondLang = document.querySelector("li:nth-child(2)");
+    console.log(secondLang); // now points to <li><b>GoLang</b></li>
+    
+    /* NOTE: EDITING THE WHOLE ELEMENT WITH outerHTML DOESNT UPDATE THE VALUE IN THE VAR
+    WE STORED IT IN, SO ALWAYS UPDATE THE VALUE USING querySelector again */
+    
+    // Editing
+    let firstLang = document.querySelector("li:first-child");
+    firstLang.outerHTML = '<li>TypeScript</li>';
+    firstLang=document.querySelector("li:first-child");
+
+    // Removing
+    const lastLang = document.querySelector('li:last-child');
+    lastLang.remove();
+    /* NOTE: Here also lastLang points to the old element GoLang, it will be removed from
+    document, but the link still remains in memory */
+
+    </script>
+</html>

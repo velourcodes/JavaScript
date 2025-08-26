@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        
+        <title>AFFAN'S DOM PRACTICE: JS</title>
+        <style>
+        .bg-black{
+            background-color: #212121;
+            color: #fff;
+        }
+    </style>
+    </head>
+    <body class="bg-black">
+        <div>
+            <h1 id="title" class="heading"> Its all about Document 
+                Object Model <span style="display: none;">
+                    Tesing hidden text</span></h1>
+            <br>
+            <h2 class="sub-heading"> My city is New Delhi <span style="display: none;"> Random Gibberish</span></h2>
+            <h2 class="sub-heading"> District is Central District </h2>
+            <h2 class="sub-heading"> University is Jamia Hamdard </h2>
+            <p class="p-text"> Dont have anything to put in p tag - so IGNORE</p>
+            <input type="password" name="" id="">
+            <ul>
+                <li class="list-item">Item 1</li>
+                <li class="list-item">Item 2</li>
+                <li class="list-item">Item 3</li>
+                <li class="list-item">Item 4</li>
+            </ul>
+        </div>
+        <script>
+                let wholeUL=document.querySelectorAll("li")
+                wholeUL.forEach((el) => el.innerText="REPLACED USING FOR EACH JS")
+                wholeUL.forEach((HTMLnode) => HTMLnode.style.fontFamily="Arial")
+                // We successfully changed the font style ;)
+        </script>
+        <script>
+            let h2_arr=Array.from(document.querySelectorAll("h2"))
+            h2_arr.forEach((el) => el.style.color="red")
+            h2_arr.forEach((el) => el.style.fontFamily="Verdana")
+            // Converted Array from NodeList/HTML Collection
+
+        </script>
+    </body>
+</html>
+
+<!-- NOTE:
+ABOUT NORMAL getElement(type) DOM Methods :
+    1. getElementById("id") - returns html type 1st matching node
+    2. getElementsByClassName("class_name") - retunrs an HTML 
+    Collection of Nodes that match
+    3. document.getElementByTagName("tag_name") - returns 
+    an HTML Collection
+    4. document.getElementsByName("val_of_any_attribute") - returns
+    a NodeList (iterable)
+    
+
+
+ABOUT QUERY SELECTORS:
+    1. when you use query selector, it gives the first matching node
+    2. querySelectorAll gives a list of nodes - iterable
+    3. In query selector:
+        - To select by class we give     ".class_name"
+        - To select by title we give     "#title"
+        - To select by attribute we give "[attribute='its_data']"
+        - To select by tag we simpy give "tag_here"
+-->

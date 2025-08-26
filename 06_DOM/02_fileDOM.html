@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- NOTE:
+         meta tag 2: used to set older browser compatibiltiy
+         meta tag 3: used to lock width and to set default zoom to 100x
+    -->
+    <title class="tab_disp_name">
+        More About DOM - Still Alive & Interested</title>
+    </head>
+    <body style="background-color: teal; color: blanchedalmond;">
+    <div class="week">
+        <div class="day" id="1"><h2>Monday</h2></div>
+        <div class="day" id="2"><h2>Tuesday</h2></div>
+        <div class="day" id="3"><h2>Wednesday</h2></div>
+        <div class="day" id="4"><h2>Thursday</h2></div>
+    </div>
+    <script type="text/JavaScript" class="JavaScript">
+        let week=document.querySelector(".week");
+        console.log(week);
+        console.log(week.children);
+        // Array.from(week.children).forEach(function (day) 
+        // {
+        //     let day_no = day.id;
+        //     if (day_no === "4") 
+        //     {
+        //         console.log("Fetched today's day - Thursday");
+        //     }
+        // })
+        let dayTwo = document.querySelectorAll('.day')[1];
+        // console.log(`Day 2 is: ${dayTwo.innerText}`);
+        console.log(week.firstElementChild.id); // 1 (for mon)
+        console.log(week.lastElementChild.id); // 4 (for thurs)
+        console.log(dayTwo.parentElement); // < div class=week...
+        console.log(dayTwo.nextElementSibling); // <div id=3...
+    </script>
+    </body>
+</html>
+
+<!-- NOTE:
+    whenever we store any node inside a variable or even access it with
+    complete code,
+    Some Properties we get with any Node:
+        - node.parentNode: fetches its parent node, always returns something
+          (even if its not an ele but a document)
+          (eg: head node's parent is a document)
+        - node.parentElement: fetches its parent element, returns 
+        something ONLY IF IT IS AN ELEMENT (NULL FOR DOCUMENTS)
+ -->

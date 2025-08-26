@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title class="tab_disp_name" id="main_disp"> 
+            Adding New Elements via DOM </title>
+    </head>
+    <body style="background-color:white; color:black">
+        <script type="text/JavaScript" class="JavaScript">
+            let new_div=document.createElement("div");
+            console.log(new_div);
+            new_div.id=Math.round(Math.random() * 10 + 1);
+            new_div.className="NULL";
+            new_div.setAttribute("title","js-gen-title");
+            new_div.setAttribute("class","js-gen-class");
+            new_div.style.backgroundColor = "darkseagreen";
+            new_div.style.borderRadius="25px";
+            new_div.innerText="I inserted this text just now with DOM in JS";
+            const txtNode=document.createTextNode("Enjoying learning DOM Alhamdulillah");
+            const span_node1=document.createElement("span");
+            span_node1.setAttribute("style","font-size: larger");
+            new_div.appendChild(span_node1);
+            const lineBreak=document.createElement("br");
+            new_div.appendChild(lineBreak);
+            const span_node2=document.createElement("span");
+            span_node2.style.fontSize = "smaller";
+            new_div.appendChild(span_node2)
+            new_div.appendChild(txtNode);
+            document.body.appendChild(new_div);
+
+            /* NOTE:
+            We use hyphenated text for accessing CSS props when in normal .class{} 
+            We use camelCasing for accessing the same props when accessing thr DOM of JS
+
+            Steps: 
+                1. created a div called new_div     - createElement("div")
+                2. set its attributes               - new_div.setAttribute()
+                3. created a separate new text node - doc.createTextNode()
+                4. appended the textNode to new_div - new_div.appendChild(txtNode)
+                5. appended the new_div to main document's body - doc.body.appendChild(new_div)
+
+                Another NOTE:
+                when we look at the number of nodes within a greater level element in HTML
+                it includes everything like text node, comments, nested tags as 
+                its separate childNodes
+            */
+        </script>
+    </body>   
+</html>
