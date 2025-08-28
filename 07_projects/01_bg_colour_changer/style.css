@@ -1,0 +1,56 @@
+html 
+{
+    margin: 0;
+}
+/* NOTE: This was a tag selector (Distinct from a class selector starting with a '.' */
+body
+{
+    margin: 0;
+    height: 100vh; /* full viewport height */
+    display: flex;
+    justify-content: center; /* centers horizontally */
+    align-items: flex-start; /* move towards top */
+    padding: 150px;
+}
+
+
+span 
+{
+    display: block
+}
+
+.canvas
+{
+    margin: 100px auto: 100px;
+    width: 80%;
+    text-align: center;
+}
+
+.button
+{
+    height: 100px;
+    width: 100px;
+    border: solid black 2px;
+    display: inline-block;
+}
+
+#violet
+{
+    background: violet;
+}
+
+#red
+{
+    background: red;
+}
+
+#yellow
+{
+    background: yellow;
+}
+
+#green
+{
+    background: green;
+}
+/*NOTE: The ones starting with '#' is an id selector*/
