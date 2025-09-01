@@ -1,0 +1,28 @@
+.weight-guide {
+  margin-top: 20px;        /* Adds space above the BMI guide block */
+  padding: 15px;           /* Adds inner spacing so text doesn't touch the edges */
+  border: 2px solid #ccc;  /* Draws a light grey border around the block */
+  border-radius: 8px;      /* Rounds the corners of the border */
+  background-color: #f9f9f9; /* Adds a very light grey background for contrast */
+  resize: both;
+  overflow: auto;
+}
+
+.weight-guide h2 {
+  margin-bottom: 10px;     /* Adds space below the heading so it's separated from the list */
+  color: #333;             /* Makes the heading text a darker grey (better readability) */
+}
+
+.weight-guide ul {
+  list-style-type: disc;   /* Uses solid round bullets for the list (default, but you can change) */
+  padding-left: 20px;      /* Indents the list items so bullets line up properly */
+}
+
+.weight-guide li {
+  margin: 5px 0;           /* Adds vertical spacing between list items */
+}
+
+.weight-guide li:last-child {
+  color: red;              /* Makes the last item (Over Weight) red for emphasis */
+  font-weight: bold;       /* Makes the Over Weight item bold so it stands out */
+}
