@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="UX-A-Compatible" content="IE=Edge"/>
+        <link rel="stylesheet" href="style.css"/>
+        <title>Number Guessing Game</title>
+    </head>
+
+    <body>
+        <form action="" method="post" class="guessGame">
+            <h1>Number Guessing Game - By Affan</h1>
+            <label for="guess">What's your guess between 1 to 100?</label>
+            <input id="guess" type="number" placeholder="Guess Wisely! " required min="1" max="100">
+            <div id="buttom-group">
+                <button id=submit>Submit</button>
+                <button type="button" id="newGame" style="display: none;">New Game</button>
+            </div>
+            <p id="hint"></p>
+            <p id="attempts"></p>
+            <p id="rem"></p>
+        </form>
+    </body>
+    <script src="script.js"></script>
+</html>
