@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Events </title>
+</head>
+<body style="background-color: #414141; color: aliceblue;">
+    <h2>Amazing image</h2>
+    <div >
+        <ul id="images">
+            <li><img width="200px" id="photoshop" src="https://images.pexels.com/photos/3561339/pexels-photo-3561339.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load" alt="photoshop"></li>
+            <li><img width="200px" id="japan" src="https://images.pexels.com/photos/3532553/pexels-photo-3532553.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load" alt=""></li>
+            <li><img width="200px" id="river" src="https://images.pexels.com/photos/3532551/pexels-photo-3532551.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load" alt=""></li>
+            <li><img width="200px" id="owl" src="https://images.pexels.com/photos/3532552/pexels-photo-3532552.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load" alt="" ></li>
+            <li><img width="200px" id="prayer" src="https://images.pexels.com/photos/2522671/pexels-photo-2522671.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load" alt=""></li>
+            <li><a style="color: aliceblue;" href="https://google.com" id="google">Google</a></li>
+        </ul>
+   </div>
+</body>
+<script>
+    const owl_img=document.getElementById("owl");
+    // owl_img.onclick = function()
+    // {
+    //     alert("Owl clicked!");
+    // }
+
+    // OR
+
+    // owl_img.addEventListener("click", 
+    // () => 
+    // {
+    //     alert("Owl clicked!");
+    // })
+
+    // Note: There exists a 3rd attachEvent() method also, but 
+    // it is not compatible with any other browser apart 
+    // from IE
+
+    // NOTE: The benefit of using addEventListener() is that - 
+    // It supports PROPAGATION!!!
+
+    /*  EVENT PROPERTIES TO STUDY ABOUT:
+        type, timestamp, defaultPrevented
+        target, toElement, srcElement, currentTarget,
+        clientX, clientY, screenX, screenY
+        altkey, ctrlkey, shiftkey, keyCode */
+
+    // document.getElementById('images').addEventListener('click', 
+    // function(e)
+    // {
+    //     console.log("Detected click inside the ul!"); 
+    //                   //EVENT BUBBLING
+    // },false);
+
+    // document.getElementById('google').addEventListener('click',
+    // function(e) 
+    // {
+    //     console.log("Detected click on Google!");
+    //     e.preventDefault(); //To prevent the redirection to Google!
+    //     e.stopPropagation();
+    // },false);       //EVENT BUBBLING
+
+    // NOTE: This method has a 3rd parameter too, default val of it
+    // is false
+    
+    // EVENT PROPAGATION:
+    // false => Event Bubbling (Go Bottom to Top) 
+    // or (Inner to Outer ele)
+    // true => Event Capturing (Go Top to Bottom) 
+    // or (Outer to Inner ele)
+
+    document.querySelector("#images").addEventListener('click',
+    function(event)
+    {
+        if(event.target.tagName === 'LI')
+        {
+            let toRemove=event.target; // Note: Direct li click => 
+            // rem li only not its parent => whole ul
+            toRemove.remove();
+        }
+        else if(event.target.tagName === 'IMG'  || event.target.id === 'google')
+        {
+            let thisTarget=event.target;
+            if(thisTarget.id ==='google') event.preventDefault();
+            let toRemove = event.target.parentNode;
+            toRemove.remove();
+            // OR toRemove.parentNode.removeChild('li')
+        }
+        console.log(`Clicked element is: Tag - ${event.target.tagName}, ID - ${event.target.id}`);
+        
+    } ,false);
+</script>
+</html>

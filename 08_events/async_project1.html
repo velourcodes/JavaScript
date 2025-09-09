@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async Project - 1</title>
+</head>
+<body>
+    <h1>Hi User! Good Morning</h1>
+    <button type = "button" id = "stop">Stop</button>
+</body>
+<script>
+    const adminName = function()
+    {
+        console.log("Affan");
+    }
+    const changeHead = function()
+    {
+        document.querySelector('h1').innerHTML = "Hi User! Good Evening";
+    }
+
+    const changeMe = setTimeout(() => changeHead(), 2000);
+
+    document.querySelector('#stop').addEventListener('click', function()
+    {
+        clearTimeout(changeMe);
+        alert("CHANGE HAS BEEN STOPPED!");
+        console.log("CHANGE HAS BEEN STOPPED!");
+    });
+</script>
+</html>
