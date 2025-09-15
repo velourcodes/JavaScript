@@ -1,22 +1,24 @@
 const express = require("express");
 const mysql = require("mysql2");
+const cors = require("cors");
 require("dotenv").config();
 const path = require("path");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 const port = process.env.PORT || 5075 ;
 
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-const db = mysql.createConnection(
-    {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: process.env.DB_NAME
-    }
-);
+const db = mysql.createConnection(process.env.DATABASE_URL);
+app.get('*', (req, res) => 
+{
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
+console.log(`\nTHIS PROJECT'S BACKEND IS CODED BY:\n
+Developer 1: MOHAMMAD AFFAN SIDDIQI`);
 db.connect((err) => 
 {
     if(err)
@@ -106,12 +108,11 @@ app.delete("/api/todos/:id",(req,res) =>
     });
 });
 console.log(`\nTHIS PROJECT'S BACKEND IS CODED BY:\n
-Developer 1: MOHAMMAD AFFAN SIDDIQI\n
-Developer 2: HASAN QURESHI\n
+Developer 1: MOHAMMAD AFFAN SIDDIQI
 `);
 // app.get("/", (req, res) => 
 // {
-//   res.send("Hosting on Oracle 🚀...");
+//   res.send("Hosting on Render 🚀...");
 // });
 app.listen(port, () =>
-console.log(`The server is running on http://localhost:${port}`));
+console.log(`The server is running on ${port}`));

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5075/api/todos";
+const API_URL = window.location.origin + '/api/todos';
 async function fetchTodos() 
 {
   try 
