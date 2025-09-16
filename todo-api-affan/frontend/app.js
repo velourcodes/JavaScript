@@ -1,20 +1,20 @@
 const API_URL = (() => 
 {
-  // Checks for Netlify environment variable first (Vite-style)
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) 
+  // 1. Check for Netlify environment variable (injected at build time)
+  if (typeof window !== 'undefined' && window.__NETLIFY_ENV__) 
   {
-    return import.meta.env.VITE_API_URL;
+    return window.__NETLIFY_ENV__.VITE_API_URL;
   }
   
-  // 2. Checks for local development
+  // 2. Check for local development
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
   {
     return 'http://localhost:5075/api/todos';
   }
   
-  // 3. Fallback - will be updated via Netlify environment variable
-  return 'https://my-render-backend-url.onrender.com/api/todos';
-})();
+  // 3. Fallback - use the actual Render URL you deployed with
+  return 'https://todo-app-backend-1b0m.onrender.com';
+});
 
 async function fetchTodos() 
 {

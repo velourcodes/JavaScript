@@ -37,7 +37,7 @@ const allowedOrigins =
   'http://localhost:5075',
   'http://127.0.0.1:5075',
   process.env.FRONTEND_URL, // Netlify URL from environment variable
-  'https://your-netlify-app.netlify.app' // Fallback - update after deployment
+  'https://todo-api-affan.netlify.app' // Fallback - update after deployment
 ].filter(Boolean); // Removes any undefined values
 
 app.use(cors(
