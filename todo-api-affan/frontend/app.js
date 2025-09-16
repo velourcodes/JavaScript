@@ -13,7 +13,7 @@ const API_URL = (() =>
   }
   
   // 3. Fallback - use the actual Render URL you deployed with
-  return 'https://todo-app-backend-1b0m.onrender.com';
+  return 'https://todo-app-backend-1b0m.onrender.com/api/todos';
 });
 
 async function fetchTodos() 
