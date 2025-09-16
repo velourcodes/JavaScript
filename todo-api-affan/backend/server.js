@@ -11,14 +11,19 @@ const port = process.env.PORT || 5075 ;
 
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-const db = mysql.createConnection(process.env.DATABASE_URL);
-app.get('*', (req, res) => 
-{
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 4000,
+  ssl: {
+    rejectUnauthorized: true
+  }
+})
 
 console.log(`\nTHIS PROJECT'S BACKEND IS CODED BY:\n
-Developer 1: MOHAMMAD AFFAN SIDDIQI`);
+Developer: MOHAMMAD AFFAN SIDDIQI`);
 db.connect((err) => 
 {
     if(err)
