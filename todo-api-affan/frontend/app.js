@@ -1,4 +1,4 @@
-const API_URL = window.location.origin + '/api/todos';
+const API_URL = 'https://todo-app-backend-1b0m.onrender.com';
 async function fetchTodos() 
 {
   try 
