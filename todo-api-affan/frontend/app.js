@@ -1,4 +1,21 @@
-const API_URL = 'https://todo-app-backend-1b0m.onrender.com';
+const API_URL = (() => 
+{
+  // Checks for Netlify environment variable first (Vite-style)
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) 
+  {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // 2. Checks for local development
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+  {
+    return 'http://localhost:5075/api/todos';
+  }
+  
+  // 3. Fallback - will be updated via Netlify environment variable
+  return 'https://my-render-backend-url.onrender.com/api/todos';
+})();
+
 async function fetchTodos() 
 {
   try 
@@ -29,8 +46,7 @@ async function fetchTodos()
     const list = document.getElementById("todoList");
     list.innerHTML = "";
 
-    if (!data.todo || !Array.isArray(data.todo)) 
-      {
+    if (!data.todo || !Array.isArray(data.todo)) {
       console.error("Expected data.todo to be an array, got:", data.todo);
       return;
     }
@@ -47,7 +63,7 @@ async function fetchTodos()
 
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
-      deleteBtn.style.marginLeft = "5px";
+      deleteBtn.style.marginLeft = "10px";
       deleteBtn.onclick = () => deleteTodo(t.id);
       li.appendChild(toggleBtn);
       li.appendChild(deleteBtn);
@@ -67,7 +83,8 @@ async function toggleTodo(id, completed)
     const response = await fetch(`${API_URL}/${id}`, 
     {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: 
+      { "Content-Type": "application/json" },
       body: JSON.stringify({ completed })
     });
     
@@ -79,7 +96,7 @@ async function toggleTodo(id, completed)
     {
       console.error("Failed to toggle todo, status:", response.status);
     }
-  }
+  } 
   catch (err) 
   {
     console.error("Failed to toggle todo:", err);
@@ -118,7 +135,8 @@ document.getElementById("todoForm").addEventListener("submit", async (e) =>
     const response = await fetch(API_URL, 
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: 
+      { "Content-Type": "application/json" },
       body: JSON.stringify({ title })
     });
     
