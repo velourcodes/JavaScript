@@ -1,177 +1,178 @@
 // Load environment variables for local development FIRST
-if (process.env.NODE_ENV !== 'production') 
-{
-  require('dotenv').config();
-}
-// Core modules and libraries
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
+
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2");
 const path = require("path");
 const fs = require("fs");
 
-// Debugg environment
 console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
-console.log("Loaded DATABASE_URL:", process.env.DATABASE_URL ? "SET" : "NOT SET");
+console.log("DATABASE_URL:", process.env.DATABASE_URL ? "SET" : "NOT SET");
 
-// Load TiDB CA certificate from file
+// Load TiDB CA certificate
 const caPath = path.join(__dirname, "tidb-ca.pem");
 let ca;
 try 
 {
   ca = fs.readFileSync(caPath);
-  console.log("✅ SSL certificate loaded from:", caPath);
+  console.log("✅ SSL certificate loaded");
 } 
 catch (err) 
 {
   console.error("❌ Failed to load SSL certificate:", err.message);
   process.exit(1);
 }
+
 const app = express();
 
-// Smart CORS configuration
+// CORS configuration
 const allowedOrigins = 
 [
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'http://localhost:5075',
-  'http://127.0.0.1:5075',
-  process.env.FRONTEND_URL, // Netlify URL from environment variable
-  'https://todo-api-affan.netlify.app' // Fallback - update after deployment
-].filter(Boolean); // Removes any undefined values
+  'http://localhost:3000', 'http://127.0.0.1:3000',
+  'http://localhost:5075', 'http://127.0.0.1:5075',
+  process.env.FRONTEND_URL, 'https://your-netlify-app.netlify.app'
+].filter(Boolean);
 
 app.use(cors(
 {
-  origin: function (origin, callback) 
+  origin: (origin, callback) => 
   {
-    // Allow requests with no origin (like mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) 
+    if (!origin || allowedOrigins.includes(origin) || 
+        (process.env.FRONTEND_URL && origin.includes(process.env.FRONTEND_URL))) 
     {
-      return callback(null, true);
-    }
-    
-    // Additional check for similar patterns
-    if (process.env.FRONTEND_URL && origin.includes(process.env.FRONTEND_URL)) 
+      callback(null, true);
+    } 
+    else 
     {
-      return callback(null, true);
+      console.log('CORS blocked:', origin);
+      callback(new Error('CORS policy: Origin not allowed'));
     }
-    
-    console.log('CORS blocked for origin:', origin);
-    const msg = 'CORS policy: Origin not allowed';
-    return callback(new Error(msg), false);
   },
   credentials: true
 }));
 
 app.use(express.json());
-
 const port = process.env.PORT || 5075;
 
-// Only serves static frontend files in development
-if (process.env.NODE_ENV !== 'production') {
+// Serve static files in development only
+if (process.env.NODE_ENV !== 'production') 
+{
   app.use(express.static(path.join(__dirname, "../frontend")));
   console.log("Serving static files for development");
 }
-// DB conn setup
+
+// Database connection with reconnection logic
 let db;
-if (process.env.DATABASE_URL) 
+let isDatabaseConnected = false;
+
+function connectToDatabase() 
 {
-  console.log("Using DATABASE_URL connection string");
+  if (!process.env.DATABASE_URL) 
+  {
+    console.error("❌ DATABASE_URL not set");
+    process.exit(1);
+  }
+
+  console.log("🔗 Attempting database connection...");
+  
   db = mysql.createConnection(
   {
     uri: process.env.DATABASE_URL,
-    ssl: 
-    {
-      rejectUnauthorized: true,
-      ca: ca,
-    },
+    ssl: { rejectUnauthorized: true, ca: ca },
+    connectTimeout: 60000,
+    acquireTimeout: 60000,
+    timeout: 60000,
+    reconnect: true,
   });
-} 
-else 
-{
-  console.error("❌ DATABASE_URL not set. Please check your .env file.");
-  process.exit(1);
+
+  db.connect((err) => 
+  {
+    if (err) 
+    {
+      console.error("❌ DB CONNECTION FAILED:", err.message);
+      setTimeout(connectToDatabase, 5000);
+    } 
+    else 
+    {
+      isDatabaseConnected = true;
+      console.log("✅ DB CONNECTED SUCCESSFULLY!");
+      
+      // Create table if it doesn't exist
+      const createTableSQL = `
+        CREATE TABLE IF NOT EXISTS todos (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          title VARCHAR(255) NOT NULL,
+          completed BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`;
+      db.query(createTableSQL, (err) => 
+      {
+        if (err) console.error("Error creating table:", err.message);
+        else console.log("✅ Todos table ready!");
+      });
+    }
+  });
+
+  db.on('error', (err) => {
+    console.error('❌ Database error:', err.message);
+    isDatabaseConnected = false;
+    setTimeout(connectToDatabase, err.code === 'PROTOCOL_CONNECTION_LOST' ? 2000 : 5000);
+  });
 }
 
-// Attempt to connect to the database
-db.connect((err) => 
+connectToDatabase();
+
+// Database health check middleware
+const checkDatabaseConnection = (req, res, next) =>
 {
-  if (err) 
+  if (!isDatabaseConnected) 
   {
-    console.log("DB CONNECTION FAILED!", err.message);
-  } 
-  else 
-  {
-    console.log("✅ DB CONNECTED SUCCESSFULLY!");
-    const createTableSQL = `
-      CREATE TABLE IF NOT EXISTS todos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        completed BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )`;
-  
-    db.query(createTableSQL, (err) => 
+    return res.status(503).json(
     {
-      if (err) 
-      {
-        console.log("Error creating table:", err.message);
-      } 
-      else 
-      {
-        console.log("✅ Todos table ready!");
-      }
+      message: "Database temporarily unavailable",
+      error: "Please try again in a few seconds"
     });
   }
-});
+  next();
+};
 
-// API ROUTES
-app.get("/api/todos", (req, res) => 
+// ✅ API ROUTES
+app.get("/api/todos", checkDatabaseConnection, (req, res) => 
 {
   const sql = "SELECT * FROM todos";
   db.query(sql, (err, result) => 
   {
     if (err) 
     {
-      return res.status(500).json(
-      {
+      return res.status(500).json({
         message: "Internal Server Error",
         error: err.message,
       });
     }
-    return res
-      .status(200)
-      .json({ message: "To-do values sent to frontend!", todo: result });
+    return res.status(200).json({ message: "To-do values sent to frontend!", todo: result });
   });
 });
 
-app.post("/api/todos", (req, res) => 
+app.post("/api/todos", checkDatabaseConnection, (req, res) => 
 {
   const { title } = req.body;
   if (!title || !title.trim()) 
   {
-    return res
-      .status(400)
-      .json({ message: "Invalid title values from frontend" });
+    return res.status(400).json({ message: "Invalid title values from frontend" });
   }
   const sql = "INSERT INTO todos (title) VALUE (?)";
-  db.query(sql, [title], (err, result) => 
+  db.query(sql, [title], (err, result) =>
   {
     if (err) 
     {
-      return res
-        .status(500)
-        .json({ message: "Database Error!", error: err.message });
+      return res.status(500).json({ message: "Database Error!", error: err.message });
     }
-    return res
-      .status(201)
-      .json({ message: "New todo created successfully!", todo_id: result.insertId });
+    return res.status(201).json({ message: "New todo created successfully!", todo_id: result.insertId });
   });
 });
 
-app.put("/api/todos/:id", (req, res) => 
+app.put("/api/todos/:id", checkDatabaseConnection, (req, res) => 
 {
   const { id } = req.params;
   const { completed } = req.body;
@@ -180,9 +181,7 @@ app.put("/api/todos/:id", (req, res) =>
   {
     if (err) 
     {
-      return res
-        .status(500)
-        .json({ message: "Database Error!", error: err.message });
+      return res.status(500).json({ message: "Database Error!", error: err.message });
     }
     if (result.affectedRows === 0) 
     {
@@ -192,7 +191,7 @@ app.put("/api/todos/:id", (req, res) =>
   });
 });
 
-app.delete("/api/todos/:id", (req, res) => 
+app.delete("/api/todos/:id", checkDatabaseConnection, (req, res) => 
 {
   const { id } = req.params;
   const sql = "DELETE FROM todos WHERE id=(?)";
@@ -200,9 +199,7 @@ app.delete("/api/todos/:id", (req, res) =>
   {
     if (err) 
     {
-      return res
-        .status(500)
-        .json({ message: "Database Error!", error: err.message });
+      return res.status(500).json({ message: "Database Error!", error: err.message });
     }
     if (result.affectedRows === 0) 
     {
@@ -212,15 +209,18 @@ app.delete("/api/todos/:id", (req, res) =>
   });
 });
 
-// Health check endpoint for Render
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
+// Health check endpoint
+app.get('/health', (req, res) => 
+{
+  res.status(200).json({ 
+    status: isDatabaseConnected ? 'healthy' : 'degraded',
+    message: 'Server is running',
+    database: isDatabaseConnected ? 'connected' : 'disconnected'
+  });
 });
 
 console.log(`\nTHIS PROJECT'S BACKEND IS CODED BY:\n
 Developer 1: MOHAMMAD AFFAN SIDDIQI\n
 Developer 2: HASAN QURESHI\n`);
 
-app.listen(port, () =>
-  console.log(`The server is running on: ${port}`)
-);
+app.listen(port, () => console.log(`The server is running on: ${port}`));
